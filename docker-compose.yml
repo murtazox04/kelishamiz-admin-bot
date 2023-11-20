@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+
+  admin-bot:
+    env_file:
+      - .env
+    build:
+      context: .
