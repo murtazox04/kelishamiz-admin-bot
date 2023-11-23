@@ -9,6 +9,8 @@ readme = "README.md"
 python = "^3.10"
 aiogram = "^3.1.1"
 python-decouple = "^3.8"
+fastapi = ">=0.103.0,<0.104.0"
+uvicorn = "^0.24.0.post1"
 
 
 [build-system]

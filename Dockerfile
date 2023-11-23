@@ -11,4 +11,4 @@ COPY . /app
 
 WORKDIR /app
 
-CMD [ "poetry", "run", "python", "app.py" ]
+CMD [ "poetry", "run", "uvicorn", "main:app", "--port=8080", "--reload" ]
