@@ -7,14 +7,14 @@ def approve_or_reject(classified_id):
     builder = InlineKeyboardBuilder()
 
     builder.button(
-        text="Tasdiqlash",
+        text="Approve",
         callback_data=CheckStatus(
             status="approve",
             classified_id=classified_id
         ).pack()
     )
     builder.button(
-        text="Rad etish",
+        text="Reject",
         callback_data=CheckStatus(
             status="reject",
             classified_id=classified_id
@@ -29,7 +29,7 @@ def delete_classified(classified_id):
     builder = InlineKeyboardBuilder()
 
     builder.button(
-        text="O'chirish",
+        text="Delete",
         callback_data=f'delete_{classified_id}'
     )
 
