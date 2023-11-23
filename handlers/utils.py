@@ -1,9 +1,12 @@
 import aiohttp
-from datetime import timedelta, datetime
 
 from decouple import config
+from datetime import datetime
 
-from loader import dp
+from database import Tokens
+from loader import TOKEN
+
+tokens = Tokens()
 
 login = config("LOGIN")
 password = config("PASSWORD")
@@ -11,21 +14,22 @@ host_url = config("HOST_URL")
 
 
 async def get_access_token():
-    data = await dp.storage.get_data()
+    token_data = await tokens.read(bot_token=TOKEN)
 
-    if not data:
-        data = await retrieve_tokens()
-    elif data["expiry"] < datetime.now():
-        data = await refresh_tokens(data['refresh_token'])
-
-    return data["access_token"]
+    if not token_data:
+        token_data = await retrieve_tokens()
+    elif token_data["expires_at"] < datetime.now():
+        token_data = await refresh_tokens(token_data['refresh_token'])
+    return token_data["access_token"]
 
 
 async def get_refresh_token():
-    data = await dp.storage.get_data()
-    if not data:
+    token_data = await tokens.read(bot_token=TOKEN)
+
+    if not token_data:
         await retrieve_tokens()
-    return data["refresh_token"]
+
+    return token_data["refresh_token"]
 
 
 async def retrieve_tokens():
@@ -36,7 +40,10 @@ async def retrieve_tokens():
         async with session.post(url, json=payload) as response:
             data = await response.json()
 
-            await dp.storage.set_data(data)
+            data = await tokens.insert(
+                access_token=data['access'],
+                refresh_token=data['refresh']
+            )
 
     return data
 
@@ -49,9 +56,9 @@ async def refresh_tokens(refresh_token):
         async with session.post(url, json=payload) as response:
             data = await response.json()
 
-            expires_in = data.get("expires_in", 7200)
-            data["expiry"] = datetime.now() + timedelta(seconds=expires_in)
-
-            await dp.storage.update_data(data)
+            data = await tokens.update(
+                bot_token=TOKEN,
+                access_token=data['access'],
+            )
 
     return data
