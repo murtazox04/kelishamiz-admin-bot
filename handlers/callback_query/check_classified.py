@@ -43,7 +43,7 @@ async def approve_classified(callback_query: types.CallbackQuery, callback_data:
             )
 
 
-@router.callback_query(CheckStatus.filter(F.status == "approve"))
+@router.callback_query(CheckStatus.filter(F.status == "reject"))
 async def reject_classified(callback_query: types.CallbackQuery, callback_data: CheckStatus) -> None:
     classified_id = callback_data.classified_id
     data = {"status": "rejected"}
@@ -90,9 +90,9 @@ async def reject_classified(callback_query: types.CallbackQuery, callback_data: 
             )
 
 
-@router.callback_query(F.date.startswith("delete_"), F.chat.id.in_(ADMINS))
-async def reject_classified(callback: types.CallbackQuery) -> None:
-    classified_id = int(callback.data.split('_')[1])
+@router.callback_query(CheckStatus.filter(F.status == "delete"))
+async def reject_classified(callback_query: types.CallbackQuery, callback_data: CheckStatus) -> None:
+    classified_id = callback_data.classified_id
     data = {"status": "deleted"}
 
     access_token = await get_access_token()
@@ -113,7 +113,7 @@ async def reject_classified(callback: types.CallbackQuery) -> None:
             location = data['detail']['location']
             created_at = data['createdAt']
 
-            await callback.message.edit_caption()
+            await callback_query.message.edit_caption()
             if currency_type == "usd":
                 price = f"${price}"
             else:
@@ -129,7 +129,7 @@ async def reject_classified(callback: types.CallbackQuery) -> None:
             if result_dynamic_fields:
                 text += result_dynamic_fields
 
-            await callback.message.edit_text(
+            await callback_query.message.edit_text(
                 caption=text,
                 reply_markup=None,
                 parse_mode=ParseMode.MARKDOWN

@@ -30,7 +30,10 @@ def delete_classified(classified_id):
 
     builder.button(
         text="Delete",
-        callback_data=f'delete_{classified_id}'
+        callback_data=CheckStatus(
+            status="delete",
+            classified_id=classified_id
+        ).pack()
     )
 
     builder.adjust(1)
