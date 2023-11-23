@@ -18,7 +18,7 @@ ADMINS = list(map(int, config("ADMINS").split(",")))
 chat_id = config('CHANNEL_ID')
 
 
-@router.callback_query(CheckStatus.filter(F.status == "approve"), F.chat.id.in_(ADMINS))
+@router.callback_query(CheckStatus.filter(F.status == "approve"))
 async def approve_classified(callback_data: CheckStatus) -> None:
     classified_id = callback_data.classified_id
     json_data = {"status": "approved"}
@@ -74,7 +74,7 @@ async def approve_classified(callback_data: CheckStatus) -> None:
             )
 
 
-@router.callback_query(CheckStatus.filter(F.status == "reject"), F.chat.id.in_(ADMINS))
+@router.callback_query(CheckStatus.filter(F.status == "reject"))
 async def reject_classified(callback_query: types.CallbackQuery, callback_data: CheckStatus) -> None:
     classified_id = callback_data.classified_id
     json_data = {"status": "rejected"}
@@ -123,7 +123,7 @@ async def reject_classified(callback_query: types.CallbackQuery, callback_data: 
             )
 
 
-@router.callback_query(CheckStatus.filter(F.status == "delete"), F.chat.id.in_(ADMINS))
+@router.callback_query(CheckStatus.filter(F.status == "delete"))
 async def reject_classified(callback_query: types.CallbackQuery, callback_data: CheckStatus) -> None:
     classified_id = callback_data.classified_id
     json_data = {"status": "deleted"}
